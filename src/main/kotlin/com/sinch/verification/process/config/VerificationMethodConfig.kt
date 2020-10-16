@@ -1,0 +1,72 @@
+package com.sinch.verification.process.config
+
+import com.sinch.verification.model.VerificationMethodType
+import com.sinch.verification.network.auth.AuthorizationMethod
+
+class VerificationMethodConfig private constructor(
+    val authorizationMethod: AuthorizationMethod,
+    val number: String,
+    val verificationMethod: VerificationMethodType,
+    val custom: String?,
+    val reference: String?,
+    val honourEarlyReject: Boolean
+) {
+
+    class Builder private constructor() : NumberSetter, AuthMethodSetter, VerificationMethodSetter,
+        ConfigFieldsSetter {
+
+        companion object {
+            /**
+             * Instance of builder that should be used to create [VerificationMethodConfig.Builder] object.
+             */
+            @JvmStatic
+            val instance: NumberSetter
+                get() = Builder()
+
+            operator fun invoke() = instance
+        }
+
+        private lateinit var authorizationMethod: AuthorizationMethod
+        private lateinit var number: String
+        private lateinit var verificationMethod: VerificationMethodType
+
+        private var custom: String? = null
+        private var reference: String? = null
+        private var honourEarlyReject = false
+
+        override fun authorizationMethod(authorizationMethod: AuthorizationMethod): VerificationMethodSetter = apply {
+            this.authorizationMethod = authorizationMethod
+        }
+
+        override fun verificationMethod(verificationMethod: VerificationMethodType): NumberSetter = apply {
+            this.verificationMethod = verificationMethod
+        }
+
+        override fun number(number: String): ConfigFieldsSetter = apply {
+            this.number = number
+        }
+
+        override fun honourEarlyReject(honourEarlyReject: Boolean): ConfigFieldsSetter = apply {
+            this.honourEarlyReject = honourEarlyReject
+        }
+
+        override fun custom(custom: String?): ConfigFieldsSetter = apply {
+            this.custom = custom
+        }
+
+        override fun reference(reference: String?): ConfigFieldsSetter = apply {
+            this.reference = reference
+        }
+
+        override fun build(): VerificationMethodConfig =
+            VerificationMethodConfig(
+                authorizationMethod = authorizationMethod,
+                number = number,
+                verificationMethod = verificationMethod,
+                custom = custom,
+                reference = reference,
+                honourEarlyReject = honourEarlyReject
+            )
+
+    }
+}
