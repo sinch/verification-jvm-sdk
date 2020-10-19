@@ -1,6 +1,8 @@
 package com.sinch.verification.process.config
 
 import com.sinch.verification.model.VerificationMethodType
+import com.sinch.verification.model.initiation.VerificationIdentity
+import com.sinch.verification.model.initiation.VerificationInitiationData
 import com.sinch.verification.network.auth.AuthorizationMethod
 
 class VerificationMethodConfig private constructor(
@@ -12,6 +14,16 @@ class VerificationMethodConfig private constructor(
     val honourEarlyReject: Boolean
 ) {
 
+    internal val initiationData by lazy {
+        VerificationInitiationData(
+            identity = VerificationIdentity(endpoint = this.number),
+            honourEarlyReject = this.honourEarlyReject,
+            reference = this.reference,
+            custom = this.custom,
+            method = this.verificationMethod
+        )
+    }
+
     class Builder private constructor() : NumberSetter, AuthMethodSetter, VerificationMethodSetter,
         ConfigFieldsSetter {
 
@@ -20,7 +32,7 @@ class VerificationMethodConfig private constructor(
              * Instance of builder that should be used to create [VerificationMethodConfig.Builder] object.
              */
             @JvmStatic
-            val instance: NumberSetter
+            val instance: AuthMethodSetter
                 get() = Builder()
 
             operator fun invoke() = instance

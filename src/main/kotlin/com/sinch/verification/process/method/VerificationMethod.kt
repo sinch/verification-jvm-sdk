@@ -2,27 +2,57 @@ package com.sinch.verification.process.method
 
 import com.sinch.verification.Verification
 import com.sinch.verification.model.VerificationState
+import com.sinch.verification.model.verification.VerificationData
+import com.sinch.verification.network.VerificationService
+import com.sinch.verification.network.service.RetrofitRestServiceProvider
 import com.sinch.verification.process.config.VerificationMethodConfig
 import com.sinch.verification.process.listener.EmptyInitiationListener
 import com.sinch.verification.process.listener.EmptyVerificationListener
 import com.sinch.verification.process.listener.InitiationListener
 import com.sinch.verification.process.listener.VerificationListener
+import com.sinch.verification.process.method.initiation.InitiationApiCallback
+import com.sinch.verification.process.method.verification.VerificationApiCallback
 
 class VerificationMethod private constructor(
     private val config: VerificationMethodConfig,
     private val initiationListener: InitiationListener = EmptyInitiationListener(),
-    private val verificationListener: VerificationListener = EmptyVerificationListener()
+    private val verificationListener: VerificationListener = EmptyVerificationListener(),
+    private val serviceProvider: RetrofitRestServiceProvider = RetrofitRestServiceProvider(config.authorizationMethod)
 ) : Verification {
 
-    override val verificationState: VerificationState
-        get() = TODO("Not yet implemented")
+    private val service by lazy {
+        serviceProvider.createService(VerificationService::class.java)
+    }
+
+    override val verificationState: VerificationState = VerificationState.IDLE
 
     override fun initiate() {
-        TODO("Not yet implemented")
+        if (!verificationState.canInitiate) {
+            return
+        }
+        service.initializeVerification(
+            data = config.initiationData,
+            acceptedLanguages = null
+        ).enqueue(
+            serviceProvider.createCallback(
+                InitiationApiCallback(
+                    initiationListener = initiationListener
+                )
+            )
+        )
     }
 
     override fun verify(verificationCode: String) {
-        TODO("Not yet implemented")
+        service.verifyNumber(
+            number = config.number,
+            data = VerificationData.forMethod(config.verificationMethod, code = verificationCode)
+        ).enqueue(
+            serviceProvider.createCallback(
+                VerificationApiCallback(
+                    verificationListener = verificationListener
+                )
+            )
+        )
     }
 
     override fun stop() {
