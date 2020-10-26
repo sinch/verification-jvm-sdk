@@ -2,6 +2,8 @@ package com.sinch.verification.process.method
 
 import com.sinch.verification.Verification
 import com.sinch.verification.model.VerificationState
+import com.sinch.verification.model.VerificationStateStatus
+import com.sinch.verification.model.asLanguagesString
 import com.sinch.verification.model.verification.VerificationData
 import com.sinch.verification.network.VerificationService
 import com.sinch.verification.network.service.RetrofitRestServiceProvider
@@ -18,25 +20,27 @@ class VerificationMethod private constructor(
     private val initiationListener: InitiationListener = EmptyInitiationListener(),
     private val verificationListener: VerificationListener = EmptyVerificationListener(),
     private val serviceProvider: RetrofitRestServiceProvider = RetrofitRestServiceProvider(config.authorizationMethod)
-) : Verification {
+) : Verification, VerificationStateListener {
 
     private val service by lazy {
         serviceProvider.createService(VerificationService::class.java)
     }
 
-    override val verificationState: VerificationState = VerificationState.IDLE
+    override var verificationState: VerificationState = VerificationState.IDLE
 
     override fun initiate() {
         if (!verificationState.canInitiate) {
             return
         }
+        update(VerificationState.Initialization(VerificationStateStatus.ONGOING))
         service.initializeVerification(
             data = config.initiationData,
-            acceptedLanguages = null
+            acceptedLanguages = config.acceptedLanguages.asLanguagesString()
         ).enqueue(
             serviceProvider.createCallback(
                 InitiationApiCallback(
-                    initiationListener = initiationListener
+                    initiationListener = initiationListener,
+                    verificationStateListener = this
                 )
             )
         )
@@ -49,14 +53,22 @@ class VerificationMethod private constructor(
         ).enqueue(
             serviceProvider.createCallback(
                 VerificationApiCallback(
-                    verificationListener = verificationListener
+                    verificationListener = verificationListener,
+                    verificationStateListener = this
                 )
             )
         )
     }
 
+    override fun update(newState: VerificationState) {
+        this.verificationState = newState
+    }
+
     override fun stop() {
-        TODO("Not yet implemented")
+        if (verificationState.isVerificationProcessFinished) {
+            return
+        }
+        update(VerificationState.ManuallyStopped)
     }
 
     class Builder private constructor() : VerificationConfigSetter, VerificationMethodFieldsSetter {
