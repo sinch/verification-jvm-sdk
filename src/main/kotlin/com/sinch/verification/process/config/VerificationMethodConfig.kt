@@ -1,5 +1,6 @@
 package com.sinch.verification.process.config
 
+import com.sinch.verification.model.VerificationLanguage
 import com.sinch.verification.model.VerificationMethodType
 import com.sinch.verification.model.initiation.VerificationIdentity
 import com.sinch.verification.model.initiation.VerificationInitiationData
@@ -11,7 +12,8 @@ class VerificationMethodConfig private constructor(
     val verificationMethod: VerificationMethodType,
     val custom: String?,
     val reference: String?,
-    val honourEarlyReject: Boolean
+    val honourEarlyReject: Boolean,
+    val acceptedLanguages: List<VerificationLanguage>
 ) {
 
     internal val initiationData by lazy {
@@ -44,7 +46,8 @@ class VerificationMethodConfig private constructor(
 
         private var custom: String? = null
         private var reference: String? = null
-        private var honourEarlyReject = false
+        private var honourEarlyReject = true
+        private var acceptedLanguages: List<VerificationLanguage> = emptyList()
 
         override fun authorizationMethod(authorizationMethod: AuthorizationMethod): VerificationMethodSetter = apply {
             this.authorizationMethod = authorizationMethod
@@ -70,6 +73,10 @@ class VerificationMethodConfig private constructor(
             this.reference = reference
         }
 
+        override fun acceptedLanguages(acceptedLanguages: List<VerificationLanguage>): ConfigFieldsSetter = apply {
+            this.acceptedLanguages = acceptedLanguages
+        }
+
         override fun build(): VerificationMethodConfig =
             VerificationMethodConfig(
                 authorizationMethod = authorizationMethod,
@@ -77,7 +84,8 @@ class VerificationMethodConfig private constructor(
                 verificationMethod = verificationMethod,
                 custom = custom,
                 reference = reference,
-                honourEarlyReject = honourEarlyReject
+                honourEarlyReject = honourEarlyReject,
+                acceptedLanguages = acceptedLanguages
             )
 
     }
