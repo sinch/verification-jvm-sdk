@@ -12,6 +12,30 @@ repositories {
     jcenter()
 }
 
+sourceSets {
+    main {
+        java.srcDir 'src/main'
+    }
+    prod {
+        java.srcDir 'src/prod'
+    }
+    ftest1 {
+        java.srcDir 'src/ftest1'
+    }
+}
+
+task productionJar(type: Jar) {
+    from sourceSets.main.output
+    from sourceSets.prod.output
+    archiveClassifier.set('productionJar')
+}
+
+task ftest1Jar(type: Jar) {
+    from sourceSets.main.output
+    from sourceSets.ftest1.output
+    archiveClassifier.set('ftest1Jar')
+}
+
 dependencies {
     implementation "com.squareup.retrofit2:retrofit:2.7.2"
     implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.5.0"

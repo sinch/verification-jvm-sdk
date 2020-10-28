@@ -1,6 +1,7 @@
 package com.sinch.verification.network.service
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.sinch.verification.Constants
 import com.sinch.verification.network.ApiCallback
 import com.sinch.verification.network.RetrofitCallback
 import com.sinch.verification.network.auth.AuthorizationInterceptor
@@ -23,7 +24,7 @@ class RetrofitRestServiceProvider(private val authorizationMethod: Authorization
 
     private val retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("https://verificationapi-v1.sinch.com/verification/v1/") //TODO change to environment vars
+            .baseUrl(Constants.API_URL)
             .addConverterFactory(
                 Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
                     .asConverterFactory("application/json".toMediaType())
