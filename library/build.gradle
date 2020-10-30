@@ -2,14 +2,25 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.3.72'
+    id 'maven-publish'
+    id "com.jfrog.bintray" version "1.8.4"
 }
 
-group 'com.sinch'
-version '1.0-SNAPSHOT'
+ext {
+    groupName = 'com.sinch'
+    projectName = 'Verification'
+    versionName = '1.0.0'
+    libDescription = "JVM Sinch Verification SDK"
+}
+
+apply from: 'bintrayPublish.gradle'
+
+group = groupName
+version = versionName
 
 repositories {
-    mavenCentral()
     jcenter()
+    mavenCentral()
 }
 
 sourceSets {
@@ -27,13 +38,11 @@ sourceSets {
 task productionJar(type: Jar) {
     from sourceSets.main.output
     from sourceSets.prod.output
-    archiveClassifier.set('productionJar')
 }
 
 task ftest1Jar(type: Jar) {
     from sourceSets.main.output
     from sourceSets.ftest1.output
-    archiveClassifier.set('ftest1Jar')
 }
 
 dependencies {
