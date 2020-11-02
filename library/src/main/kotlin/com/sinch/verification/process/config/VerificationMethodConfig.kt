@@ -6,7 +6,7 @@ import com.sinch.verification.model.initiation.VerificationIdentity
 import com.sinch.verification.model.initiation.VerificationInitiationData
 import com.sinch.verification.network.auth.AuthorizationMethod
 
-class VerificationMethodConfig private constructor(
+class VerificationMethodConfig internal constructor(
     val authorizationMethod: AuthorizationMethod,
     val number: String,
     val verificationMethod: VerificationMethodType,
