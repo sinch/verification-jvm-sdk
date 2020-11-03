@@ -4,6 +4,12 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 
+/**
+ * Class representing language used by the verification connected processes (as per ISO 3166-1 standard).
+ * @property language ISO 639-1 language code abbreviation.
+ * @property region ISO 3166-1 alfa-2 region code abbreviation.
+ * @property weight Language weight parameter used as [Accept-Language](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language) header.
+ */
 data class VerificationLanguage(
     val language: String,
     val region: String? = null,
