@@ -127,6 +127,32 @@ class VerificationMethodTests {
     }
 
     @Test
+    fun testCorrectVerificationSetsProperState() {
+        val correctCode = "123456"
+        setupVerificationMock(correctCode = correctCode)
+        verification.initiate()
+        verification.verify(correctCode)
+
+        Assert.assertEquals(
+            VerificationState.Verification(VerificationStateStatus.SUCCESS),
+            verification.verificationState
+        )
+    }
+
+    @Test
+    fun testFailedVerificationSetsProperState() {
+        val correctCode = "123456"
+        setupVerificationMock(correctCode = correctCode)
+        verification.initiate()
+        verification.verify(correctCode.reversed())
+
+        Assert.assertEquals(
+            VerificationState.Verification(VerificationStateStatus.ERROR),
+            verification.verificationState
+        )
+    }
+
+    @Test
     fun testMultipleVerificationNotifyListenerOnce() {
         val correctCode = "123456"
         setupVerificationMock(correctCode = correctCode)
@@ -136,6 +162,20 @@ class VerificationMethodTests {
         }
         verify(exactly = 0) { verificationListener.onVerificationFailed(any()) }
         verify(exactly = 1) { verificationListener.onVerified() }
+    }
+
+    @Test
+    fun testSuccessAfterFailureVerification() {
+        val correctCode = "123456"
+        setupVerificationMock(correctCode)
+        verification.initiate()
+        verification.verify(correctCode.reversed())
+        verification.verify(correctCode)
+
+        verifySequence {
+            verificationListener.onVerificationFailed(any())
+            verificationListener.onVerified()
+        }
     }
 
     private fun setupVerificationMock(

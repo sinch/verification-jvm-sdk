@@ -6,6 +6,13 @@ import com.sinch.verification.model.verification.methods.SmsVerificationDetails
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ * Class containing data that is passed to the backend as the actual code verification check.
+ * @property method Method used to verify the phone number.
+ * @property smsDetails Sms verification code details passed in case of [VerificationMethodType.SMS] method].
+ * @property flashCallDetails Flashcall verification code details passed in case of [VerificationMethodType.FLASHCALL] method].
+ * @property calloutCode Callout verification code spoken by text-to-speech software in case of [VerificationMethodType.CALLOUT] method].
+ */
 @Serializable
 data class VerificationData(
     @SerialName("method") val method: VerificationMethodType,
