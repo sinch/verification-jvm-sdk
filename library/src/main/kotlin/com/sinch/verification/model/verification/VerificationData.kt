@@ -8,10 +8,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class VerificationData(
-    @SerialName("method") private val method: VerificationMethodType,
-    @SerialName("sms") private val smsDetails: SmsVerificationDetails? = null,
-    @SerialName("flashcall") private val flashCallDetails: FlashCallVerificationDetails? = null,
-    @SerialName("code") private val calloutCode: String? = null
+    @SerialName("method") val method: VerificationMethodType,
+    @SerialName("sms") val smsDetails: SmsVerificationDetails? = null,
+    @SerialName("flashcall") val flashCallDetails: FlashCallVerificationDetails? = null,
+    @SerialName("code") val calloutCode: String? = null
 ) {
 
     companion object {

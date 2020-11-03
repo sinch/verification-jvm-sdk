@@ -46,11 +46,13 @@ task ftest1Jar(type: Jar) {
 }
 
 dependencies {
-    implementation "com.squareup.retrofit2:retrofit:2.7.2"
+    implementation "com.squareup.retrofit2:retrofit:2.8.1"
     implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.5.0"
     implementation "com.squareup.okhttp3:okhttp:4.5.0"
     implementation 'com.squareup.okhttp3:logging-interceptor:4.5.0'
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation "io.mockk:mockk:1.10.2"
+    testImplementation "com.squareup.retrofit2:retrofit-mock:2.8.1"
 }

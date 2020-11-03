@@ -6,6 +6,7 @@ import com.sinch.verification.model.VerificationStateStatus
 import com.sinch.verification.model.asLanguagesString
 import com.sinch.verification.model.verification.VerificationData
 import com.sinch.verification.network.VerificationService
+import com.sinch.verification.network.service.RestServiceProvider
 import com.sinch.verification.network.service.RetrofitRestServiceProvider
 import com.sinch.verification.process.config.VerificationMethodConfig
 import com.sinch.verification.process.listener.EmptyInitiationListener
@@ -15,11 +16,11 @@ import com.sinch.verification.process.listener.VerificationListener
 import com.sinch.verification.process.method.initiation.InitiationApiCallback
 import com.sinch.verification.process.method.verification.VerificationApiCallback
 
-class VerificationMethod private constructor(
-    private val config: VerificationMethodConfig,
-    private val initiationListener: InitiationListener = EmptyInitiationListener(),
-    private val verificationListener: VerificationListener = EmptyVerificationListener(),
-    private val serviceProvider: RetrofitRestServiceProvider = RetrofitRestServiceProvider(config.authorizationMethod)
+class VerificationMethod internal constructor(
+    internal val config: VerificationMethodConfig,
+    internal val initiationListener: InitiationListener = EmptyInitiationListener(),
+    internal val verificationListener: VerificationListener = EmptyVerificationListener(),
+    internal val serviceProvider: RestServiceProvider = RetrofitRestServiceProvider(config.authorizationMethod)
 ) : Verification, VerificationStateListener {
 
     private val service by lazy {
@@ -47,6 +48,10 @@ class VerificationMethod private constructor(
     }
 
     override fun verify(verificationCode: String) {
+        if (!verificationState.canVerify) {
+            return
+        }
+        update(VerificationState.Verification(VerificationStateStatus.ONGOING))
         service.verifyNumber(
             number = config.number,
             data = VerificationData.forMethod(config.verificationMethod, code = verificationCode)
