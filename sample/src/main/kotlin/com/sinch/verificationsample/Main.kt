@@ -1,5 +1,6 @@
 package com.sinch.verificationsample
 
+import com.sinch.BuildConfig
 import com.sinch.verification.Verification
 import com.sinch.verification.model.VerificationMethodType
 import com.sinch.verification.model.initiation.InitiationResponseData
@@ -15,7 +16,7 @@ fun main(args: Array<String>) {
 
 object Sample : VerificationListener, InitiationListener {
 
-    private const val APP_KEY = "9e556452-e462-4006-aab0-8165ca04de66"
+    private const val APP_KEY = BuildConfig.APP_KEY
     private var verification: Verification? = null
 
     fun runSample() {
