@@ -23,7 +23,7 @@ object Sample : VerificationListener, InitiationListener {
         val phoneNumber = inputWithMessage("Enter number that needs to be verified")
         val verificationConfig = VerificationMethodConfig.Builder.instance
             .authorizationMethod(AppKeyAuthorizationMethod(appKey = APP_KEY))
-            .verificationMethod(VerificationMethodType.SMS)
+            .verificationMethod(VerificationMethodType.AUTO)
             .number(phoneNumber)
             .build()
 
