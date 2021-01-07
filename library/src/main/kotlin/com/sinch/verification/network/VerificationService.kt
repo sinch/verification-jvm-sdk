@@ -39,4 +39,12 @@ interface VerificationService {
         @Body data: VerificationData
     ): Call<VerificationResponseData>
 
+    /**
+     * Verifies if the verification code (targetUri field) is correct.
+     * @param url URI returned by seamless verification initialization call.
+     * @return A [Call] object for the request.
+     */
+    @GET
+    fun verifySeamless(@Url url: String): Call<VerificationResponseData>
+
 }

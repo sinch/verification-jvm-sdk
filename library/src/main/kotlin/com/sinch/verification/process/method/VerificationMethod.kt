@@ -79,6 +79,17 @@ class VerificationMethod internal constructor(
         )
     }
 
+    private fun verifySeamlessly(targetUri: String) {
+        service.verifySeamless(targetUri).enqueue(
+            serviceProvider.createCallback(
+                VerificationApiCallback(
+                    verificationListener = verificationListener,
+                    verificationStateListener = this
+                )
+            )
+        )
+    }
+
     private fun verifyBySubId(verificationCode: String, method: VerificationMethodType?) {
         if (method == null) {
             verificationListener.onVerificationFailed(VerificationException("Verification method has to be specified"))
@@ -115,6 +126,10 @@ class VerificationMethod internal constructor(
 
     override fun onInitiated(data: InitiationResponseData) {
         initiationResponseData = data
+        val seamlessDetails = data.seamlessDetails
+        if (seamlessDetails != null) {
+            verifySeamlessly(seamlessDetails.targetUri)
+        }
         initiationListener.onInitiated(data)
     }
 
