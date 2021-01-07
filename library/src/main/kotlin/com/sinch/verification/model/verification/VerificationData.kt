@@ -1,6 +1,7 @@
 package com.sinch.verification.model.verification
 
 import com.sinch.verification.model.VerificationMethodType
+import com.sinch.verification.model.verification.methods.CalloutVerificationDetails
 import com.sinch.verification.model.verification.methods.FlashCallVerificationDetails
 import com.sinch.verification.model.verification.methods.SmsVerificationDetails
 import kotlinx.serialization.SerialName
@@ -11,20 +12,20 @@ import kotlinx.serialization.Serializable
  * @property method Method used to verify the phone number.
  * @property smsDetails Sms verification code details passed in case of [VerificationMethodType.SMS] method].
  * @property flashCallDetails Flashcall verification code details passed in case of [VerificationMethodType.FLASHCALL] method].
- * @property calloutCode Callout verification code spoken by text-to-speech software in case of [VerificationMethodType.CALLOUT] method].
+ * @property calloutDetails Callout verification code spoken by text-to-speech software in case of [VerificationMethodType.CALLOUT] method].
  */
 @Serializable
 data class VerificationData(
     @SerialName("method") val method: VerificationMethodType,
     @SerialName("sms") val smsDetails: SmsVerificationDetails? = null,
     @SerialName("flashcall") val flashCallDetails: FlashCallVerificationDetails? = null,
-    @SerialName("code") val calloutCode: String? = null
+    @SerialName("callout") val calloutDetails: CalloutVerificationDetails? = null
 ) {
 
     companion object {
         fun forMethod(method: VerificationMethodType, code: String) = when (method) {
             VerificationMethodType.SMS -> VerificationData(smsDetails = SmsVerificationDetails(code = code))
-            VerificationMethodType.CALLOUT -> VerificationData(calloutCode = code)
+            VerificationMethodType.CALLOUT -> VerificationData(calloutDetails = CalloutVerificationDetails(code = code))
             VerificationMethodType.FLASHCALL -> VerificationData(flashCallDetails = FlashCallVerificationDetails(cli = code))
             else -> error("Verification of type $method not supported")
         }
@@ -35,9 +36,9 @@ data class VerificationData(
         smsDetails = smsDetails
     )
 
-    constructor(calloutCode: String) : this(
+    constructor(calloutDetails: CalloutVerificationDetails) : this(
         method = VerificationMethodType.CALLOUT,
-        calloutCode = calloutCode
+        calloutDetails = calloutDetails
     )
 
     constructor(flashCallDetails: FlashCallVerificationDetails) : this(

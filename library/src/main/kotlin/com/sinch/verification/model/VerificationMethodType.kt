@@ -31,7 +31,13 @@ enum class VerificationMethodType(val value: String) {
      * Seamless verification.
      */
     @SerialName("seamless")
-    SEAMLESS("seamless");
+    SEAMLESS("seamless"),
+
+    /**
+     * Auto verification.
+     */
+    @SerialName("auto")
+    AUTO("auto");
 
     /**
      * Flag indicating if given method allows typing the verification code manually.
@@ -58,6 +64,7 @@ enum class VerificationMethodType(val value: String) {
                 FLASHCALL.value.toLowerCase(Locale.ROOT) -> FLASHCALL
                 CALLOUT.value.toLowerCase(Locale.ROOT) -> CALLOUT
                 SEAMLESS.value.toLowerCase() -> SEAMLESS
+                AUTO.value.toLowerCase() -> AUTO
                 else -> throw SerializationException("Unknown element ${decoder.decodeString()}")
             }
 

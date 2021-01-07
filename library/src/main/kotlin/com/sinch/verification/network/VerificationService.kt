@@ -26,4 +26,17 @@ interface VerificationService {
         @Path("number") number: String,
         @Body data: VerificationData
     ): Call<VerificationResponseData>
+
+    /**
+     * Verifies if given code is correct.
+     * @param subVerificationId ID assigned to specific method of the verification.
+     * @param data Verification data required for auto verification API call.
+     * @return A [Call] object for the request.
+     */
+    @PUT("verifications/id/{subVerificationId}")
+    fun verifyById(
+        @Path("subVerificationId") subVerificationId: String,
+        @Body data: VerificationData
+    ): Call<VerificationResponseData>
+
 }

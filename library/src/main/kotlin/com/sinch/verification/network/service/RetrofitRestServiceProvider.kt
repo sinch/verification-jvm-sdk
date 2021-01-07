@@ -13,7 +13,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 
-internal open class RetrofitRestServiceProvider(private val authorizationMethod: AuthorizationMethod) : RestServiceProvider {
+internal open class RetrofitRestServiceProvider(private val authorizationMethod: AuthorizationMethod) :
+    RestServiceProvider {
 
     private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient().newBuilder()

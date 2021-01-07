@@ -1,9 +1,12 @@
 package com.sinch.verification.process.method
 
 import com.sinch.verification.Verification
+import com.sinch.verification.model.VerificationMethodType
 import com.sinch.verification.model.VerificationState
 import com.sinch.verification.model.VerificationStateStatus
 import com.sinch.verification.model.asLanguagesString
+import com.sinch.verification.model.initiation.InitiationResponseData
+import com.sinch.verification.model.initiation.subVerificationDetails
 import com.sinch.verification.model.verification.VerificationData
 import com.sinch.verification.network.VerificationService
 import com.sinch.verification.network.service.RestServiceProvider
@@ -15,19 +18,22 @@ import com.sinch.verification.process.listener.InitiationListener
 import com.sinch.verification.process.listener.VerificationListener
 import com.sinch.verification.process.method.initiation.InitiationApiCallback
 import com.sinch.verification.process.method.verification.VerificationApiCallback
+import com.sinch.verification.process.method.verification.VerificationException
 
 class VerificationMethod internal constructor(
     internal val config: VerificationMethodConfig,
     internal val initiationListener: InitiationListener = EmptyInitiationListener(),
     internal val verificationListener: VerificationListener = EmptyVerificationListener(),
     internal val serviceProvider: RestServiceProvider = RetrofitRestServiceProvider(config.authorizationMethod)
-) : Verification, VerificationStateListener {
+) : Verification, VerificationStateListener, InitiationListener {
 
     private val service by lazy {
         serviceProvider.createService(VerificationService::class.java)
     }
 
     override var verificationState: VerificationState = VerificationState.IDLE
+
+    private var initiationResponseData: InitiationResponseData? = null
 
     override fun initiate() {
         if (!verificationState.canInitiate) {
@@ -40,21 +46,52 @@ class VerificationMethod internal constructor(
         ).enqueue(
             serviceProvider.createCallback(
                 InitiationApiCallback(
-                    initiationListener = initiationListener,
+                    initiationListener = this,
                     verificationStateListener = this
                 )
             )
         )
     }
 
-    override fun verify(verificationCode: String) {
+    override fun verify(verificationCode: String, method: VerificationMethodType?) {
         if (!verificationState.canVerify) {
             return
         }
         update(VerificationState.Verification(VerificationStateStatus.ONGOING))
+        if (config.verificationMethod == VerificationMethodType.AUTO) {
+            verifyBySubId(verificationCode, method)
+        } else {
+            verifyByNumber(verificationCode)
+        }
+    }
+
+    private fun verifyByNumber(verificationCode: String) {
         service.verifyNumber(
             number = config.number,
             data = VerificationData.forMethod(config.verificationMethod, code = verificationCode)
+        ).enqueue(
+            serviceProvider.createCallback(
+                VerificationApiCallback(
+                    verificationListener = verificationListener,
+                    verificationStateListener = this
+                )
+            )
+        )
+    }
+
+    private fun verifyBySubId(verificationCode: String, method: VerificationMethodType?) {
+        if (method == null) {
+            verificationListener.onVerificationFailed(VerificationException("Verification method has to be specified"))
+            return
+        }
+        val subVerificationId = initiationResponseData?.subVerificationDetails(method)?.subVerificationId
+        if (subVerificationId == null) {
+            verificationListener.onVerificationFailed(VerificationException("Cannot create verification data for $method"))
+            return
+        }
+        service.verifyById(
+            subVerificationId = subVerificationId,
+            data = VerificationData.forMethod(method, code = verificationCode)
         ).enqueue(
             serviceProvider.createCallback(
                 VerificationApiCallback(
@@ -74,6 +111,15 @@ class VerificationMethod internal constructor(
             return
         }
         update(VerificationState.ManuallyStopped)
+    }
+
+    override fun onInitiated(data: InitiationResponseData) {
+        initiationResponseData = data
+        initiationListener.onInitiated(data)
+    }
+
+    override fun onInitializationFailed(t: Throwable) {
+        initiationListener.onInitializationFailed(t)
     }
 
     class Builder private constructor() : VerificationConfigSetter, VerificationMethodFieldsSetter {
