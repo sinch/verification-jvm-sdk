@@ -45,16 +45,41 @@ object Sample : VerificationListener, InitiationListener {
     }
 
     override fun onInitiated(data: InitiationResponseData) {
-        verification?.verify(inputWithMessage("Enter received code"))
+        if (data.method == VerificationMethodType.AUTO) {
+            verifyCodeWithSpecificMethod()
+        } else {
+            verification?.verify(inputWithMessage("Enter received code"))
+        }
     }
 
     override fun onInitializationFailed(t: Throwable) {
         println("Error while initiation verification: ${t.localizedMessage}")
     }
 
+    private fun verifyCodeWithSpecificMethod() {
+        val code = inputWithMessage("Enter received code")
+        val method = inputVerificationMethod()
+        verification?.verify(code, method)
+    }
+
     private fun inputWithMessage(msg: String): String {
         println(msg)
         return readLine().orEmpty()
+    }
+
+    private fun inputVerificationMethod(): VerificationMethodType {
+        return when (inputWithMessage(
+            "Enter verification method\n" +
+                    "1 - SMS\n"+
+                    "2 - Flashcall\n" +
+                    "3 - Callout\n"
+        )) {
+            "1" -> VerificationMethodType.SMS
+            "2" -> VerificationMethodType.FLASHCALL
+            "3" -> VerificationMethodType.CALLOUT
+            else -> print("Method not known using SMS")
+                .run { VerificationMethodType.SMS }
+        }
     }
 
 }

@@ -126,9 +126,9 @@ class VerificationMethod internal constructor(
 
     override fun onInitiated(data: InitiationResponseData) {
         initiationResponseData = data
-        val seamlessDetails = data.seamlessDetails
-        if (seamlessDetails != null) {
-            verifySeamlessly(seamlessDetails.targetUri)
+        //If InitiationResponse contains seamless details why try verify seamlessly everytime.
+        if (data.seamlessDetails != null) {
+            verifySeamlessly(data.seamlessDetails.targetUri)
         }
         initiationListener.onInitiated(data)
     }
