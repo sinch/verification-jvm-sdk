@@ -9,13 +9,13 @@ bintray {
     publications = ['Production']
     override = true
     pkg {
-        repo = repoId
+        repo = 'com.sinch.jvm.sdk.verification'
         name = artifactId
         userOrg = 'sinch'
         publicDownloadNumbers = true
         version {
             name = versionName
-            desc = "Versiion $versionName"
+            desc = "Version $versionName"
             released = new Date()
         }
     }
@@ -25,7 +25,7 @@ project.afterEvaluate {
     publishing {
         publications {
             Production(MavenPublication) {
-                artifacts { productionJar }
+                artifact productionJar
 
                 pom {
                     name = projectName
