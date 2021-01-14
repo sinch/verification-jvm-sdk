@@ -19,10 +19,10 @@ data class InitiationResponseData(
     @SerialName("auto") val autoDetails: AutoInitializationResponseDetails = AutoInitializationResponseDetails(
         methodsOrder = emptyList()
     ),
-    @SerialName("sms") val smsDetails: SmsInitializationDetails?,
-    @SerialName("flashCall") val flashcallDetails: FlashCallInitializationDetails?,
-    @SerialName("callout") val calloutDetails: CalloutInitializationDetails?,
-    @SerialName("seamless") val seamlessDetails: SeamlessInitializationDetails?,
+    @SerialName("sms") val smsDetails: SmsInitializationDetails? = null,
+    @SerialName("flashCall") val flashcallDetails: FlashCallInitializationDetails? = null,
+    @SerialName("callout") val calloutDetails: CalloutInitializationDetails? = null,
+    @SerialName("seamless") val seamlessDetails: SeamlessInitializationDetails? = null,
     @SerialName("method") val method: VerificationMethodType,
     @Transient val verificationLanguage: VerificationLanguage? = null
 )
