@@ -10,7 +10,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 
 internal open class RetrofitRestServiceProvider(private val authorizationMethod: AuthorizationMethod) :
@@ -19,7 +18,6 @@ internal open class RetrofitRestServiceProvider(private val authorizationMethod:
     private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient().newBuilder()
             .addInterceptor(AuthorizationInterceptor(authorizationMethod))
-            .addInterceptor(HttpLoggingInterceptor().apply { this.level = HttpLoggingInterceptor.Level.BODY })
             .build()
     }
 
