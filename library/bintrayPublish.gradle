@@ -1,0 +1,62 @@
+ext {
+    repoId = 'com.sinch.jvm.sdk.verification'
+    artifactId = 'verification'
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayApiKey
+    publications = ['Production']
+    override = true
+    pkg {
+        repo = 'com.sinch.jvm.sdk.verification'
+        name = artifactId
+        userOrg = 'sinch'
+        publicDownloadNumbers = true
+        version {
+            name = versionName
+            desc = "Version $versionName"
+            released = new Date()
+        }
+    }
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            Production(MavenPublication) {
+                artifact productionJar
+
+                pom {
+                    name = projectName
+                    description = libDescription
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                }
+
+                groupId = groupId
+                artifactId = artifactId
+                version = versionName
+
+                pom.withXml {
+                    def dependenciesNode = asNode().getAt('dependencies')[0] ?: asNode().appendNode('dependencies')
+
+                    // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
+                    configurations.implementation.allDependencies.each {
+                        // Ensure dependencies such as fileTree are not included.
+                        if (it.name != 'unspecified') {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
