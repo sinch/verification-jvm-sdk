@@ -6,10 +6,13 @@ import com.sinch.verification.network.ApiCallback
 import com.sinch.verification.network.RetrofitCallback
 import com.sinch.verification.network.auth.AuthorizationInterceptor
 import com.sinch.verification.network.auth.AuthorizationMethod
+import com.sinch.verification.network.convertToApiErrorData
+import com.sinch.verification.process.ApiCallException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import retrofit2.Retrofit
 
 internal open class RetrofitRestServiceProvider(private val authorizationMethod: AuthorizationMethod) :
@@ -37,5 +40,14 @@ internal open class RetrofitRestServiceProvider(private val authorizationMethod:
 
     override fun <T> createCallback(apiCallback: ApiCallback<T>): RetrofitCallback<T> =
         RetrofitCallback(retrofit, apiCallback)
+
+    override fun createException(errorBody: ResponseBody?): Exception {
+        val apiCallExceptionData = errorBody?.convertToApiErrorData(retrofit)
+        return if (apiCallExceptionData != null) {
+            ApiCallException(apiCallExceptionData)
+        } else {
+            Exception("Error body could not be parsed properly to sinch API error response")
+        }
+    }
 
 }

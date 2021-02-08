@@ -1,9 +1,9 @@
 package com.sinch.verification.model.initiation.methods
 
+import com.sinch.verification.model.VerificationMethodType
 import com.sinch.verification.model.initiation.InitiationDetails
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import com.sinch.verification.model.VerificationMethodType
 
 /**
  * Class containing details (returned by the API) about the initiated sms verification process.
