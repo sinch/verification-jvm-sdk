@@ -5,6 +5,7 @@ import com.sinch.verification.Verification
 import com.sinch.verification.model.VerificationMethodType
 import com.sinch.verification.model.initiation.InitiationResponseData
 import com.sinch.verification.network.auth.AppKeyAuthorizationMethod
+import com.sinch.verification.process.ApiCallException
 import com.sinch.verification.process.config.VerificationMethodConfig
 import com.sinch.verification.process.listener.InitiationListener
 import com.sinch.verification.process.listener.VerificationListener
@@ -23,7 +24,7 @@ object Sample : VerificationListener, InitiationListener {
         val phoneNumber = inputWithMessage("Enter number that needs to be verified")
         val verificationConfig = VerificationMethodConfig.Builder.instance
             .authorizationMethod(AppKeyAuthorizationMethod(appKey = APP_KEY))
-            .verificationMethod(VerificationMethodType.AUTO)
+            .verificationMethod(VerificationMethodType.SMS)
             .number(phoneNumber)
             .build()
 
@@ -53,7 +54,10 @@ object Sample : VerificationListener, InitiationListener {
     }
 
     override fun onInitializationFailed(t: Throwable) {
-        println("Error while initiation verification: ${t.localizedMessage}")
+        when (t) {
+            is ApiCallException -> print("ApiCallException during initialization exception data is: ${t.data}")
+            else -> println("Non ApiCallException while initiation verification: ${t.localizedMessage}")
+        }
     }
 
     private fun verifyCodeWithSpecificMethod() {

@@ -1,8 +1,6 @@
 package com.sinch.verification.network
 
-import com.sinch.verification.model.ApiErrorData
 import com.sinch.verification.process.ApiCallException
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,14 +26,8 @@ open class RetrofitCallback<T>(
         if (response.isSuccessful) {
             response.body()?.let { apiCallback.onSuccess(it, response) }
         } else {
-            response.errorBody()?.convertToError()
+            response.errorBody()?.convertToApiErrorData(retrofit)?.let { apiCallback.onError(ApiCallException(it)) }
         }
-    }
-
-    private fun ResponseBody.convertToError() {
-        val responseBodyConverter =
-            retrofit.responseBodyConverter<ApiErrorData>(ApiErrorData::class.java, emptyArray())
-        responseBodyConverter.convert(this)?.let { apiCallback.onError(ApiCallException(it)) }
     }
 
 }
