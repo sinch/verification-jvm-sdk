@@ -19,7 +19,8 @@ class VerificationMethodBuilderTests {
             reference = TestConstants.TEST_REFERENCE,
             custom = TestConstants.TEST_CUSTOM,
             verificationMethod = TestConstants.TEST_DEFAULT_METHOD,
-            acceptedLanguages = emptyList()
+            acceptedLanguages = emptyList(),
+            metadata = TestConstants.TEST_METADATA
         )
     }
 
