@@ -1,5 +1,8 @@
 package com.sinch.verification.process.config
 
+import com.sinch.verification.metadata.factory.DefaultJVMMetadataFactory
+import com.sinch.verification.metadata.factory.MetadataFactory
+import com.sinch.verification.metadata.model.Metadata
 import com.sinch.verification.model.VerificationLanguage
 import com.sinch.verification.model.VerificationMethodType
 import com.sinch.verification.model.initiation.VerificationIdentity
@@ -13,7 +16,8 @@ class VerificationMethodConfig internal constructor(
     val custom: String?,
     val reference: String?,
     val honourEarlyReject: Boolean,
-    val acceptedLanguages: List<VerificationLanguage>
+    val acceptedLanguages: List<VerificationLanguage>,
+    val metadata: Metadata
 ) {
 
     internal val initiationData by lazy {
@@ -22,7 +26,8 @@ class VerificationMethodConfig internal constructor(
             honourEarlyReject = this.honourEarlyReject,
             reference = this.reference,
             custom = this.custom,
-            method = this.verificationMethod
+            method = this.verificationMethod,
+            metadata = this.metadata
         )
     }
 
@@ -48,6 +53,7 @@ class VerificationMethodConfig internal constructor(
         private var reference: String? = null
         private var honourEarlyReject = true
         private var acceptedLanguages: List<VerificationLanguage> = emptyList()
+        private var metadataFactory: MetadataFactory = DefaultJVMMetadataFactory()
 
         override fun authorizationMethod(authorizationMethod: AuthorizationMethod): VerificationMethodSetter = apply {
             this.authorizationMethod = authorizationMethod
@@ -77,6 +83,10 @@ class VerificationMethodConfig internal constructor(
             this.acceptedLanguages = acceptedLanguages
         }
 
+        override fun metadataFactory(metadataFactory: MetadataFactory): ConfigFieldsSetter = apply {
+            this.metadataFactory = metadataFactory
+        }
+
         override fun build(): VerificationMethodConfig =
             VerificationMethodConfig(
                 authorizationMethod = authorizationMethod,
@@ -85,7 +95,8 @@ class VerificationMethodConfig internal constructor(
                 custom = custom,
                 reference = reference,
                 honourEarlyReject = honourEarlyReject,
-                acceptedLanguages = acceptedLanguages
+                acceptedLanguages = acceptedLanguages,
+                metadata = metadataFactory.create()
             )
 
     }
