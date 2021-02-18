@@ -1,5 +1,8 @@
 package com.sinch.verificationcore.method
 
+import com.sinch.verification.metadata.collector.BasicLocaleCollector
+import com.sinch.verification.metadata.factory.DefaultJVMMetadataFactory
+import com.sinch.verification.metadata.model.Metadata
 import com.sinch.verification.model.VerificationLanguage
 import com.sinch.verification.model.initiation.VerificationIdentity
 import com.sinch.verification.model.initiation.VerificationInitiationData
@@ -68,6 +71,7 @@ class VerificationMethodConfigTests {
         val testCustom = "customTest"
         val testReference = "referenceTest"
         val testHonourEarlyReject = false
+        val testPlatformMetadata = "TEST_PLATFORM"
 
         val builtConfig = VerificationMethodConfig.Builder
             .instance
@@ -77,6 +81,7 @@ class VerificationMethodConfigTests {
             .acceptedLanguages(listOf(verificationLanguage))
             .custom(testCustom)
             .reference(testReference)
+            .metadataFactory(DefaultJVMMetadataFactory(testPlatformMetadata))
             .honourEarlyReject(testHonourEarlyReject)
             .build()
 
@@ -86,7 +91,8 @@ class VerificationMethodConfigTests {
             method = TEST_DEFAULT_METHOD,
             custom = testCustom,
             reference = testReference,
-            honourEarlyReject = testHonourEarlyReject
+            honourEarlyReject = testHonourEarlyReject,
+            metadata = Metadata.createUsing(testPlatformMetadata, BasicLocaleCollector())
         )
 
         Assert.assertEquals(configConstructedData, constructorInitiationData)

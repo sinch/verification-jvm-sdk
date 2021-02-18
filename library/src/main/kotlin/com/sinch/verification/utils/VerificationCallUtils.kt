@@ -1,5 +1,7 @@
 package com.sinch.verification.utils
 
+import com.sinch.verification.metadata.factory.DefaultJVMMetadataFactory
+import com.sinch.verification.metadata.factory.MetadataFactory
 import com.sinch.verification.model.VerificationMethodType
 import com.sinch.verification.model.initiation.InitiationResponseData
 import com.sinch.verification.model.initiation.VerificationIdentity
@@ -31,6 +33,7 @@ object VerificationCallUtils {
         honourEarlyReject: Boolean = true,
         reference: String? = null,
         acceptedLanguages: String? = null,
+        metadataFactory: MetadataFactory = DefaultJVMMetadataFactory(),
         restServiceProvider: RestServiceProvider = RetrofitRestServiceProvider(AppKeyAuthorizationMethod(appHash))
     ): InitiationResponseData {
         val service = restServiceProvider.createService(
@@ -42,7 +45,8 @@ object VerificationCallUtils {
                 method = method,
                 custom = custom,
                 reference = reference,
-                honourEarlyReject = honourEarlyReject
+                honourEarlyReject = honourEarlyReject,
+                metadata = metadataFactory.create()
             ), acceptedLanguages
         ).execute().mapToBodyDataOrThrowException(restServiceProvider)
     }
