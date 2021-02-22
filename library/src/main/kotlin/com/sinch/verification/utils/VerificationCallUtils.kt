@@ -10,6 +10,7 @@ import com.sinch.verification.model.verification.VerificationData
 import com.sinch.verification.model.verification.VerificationResponseData
 import com.sinch.verification.network.VerificationService
 import com.sinch.verification.network.auth.AppKeyAuthorizationMethod
+import com.sinch.verification.network.auth.AuthorizationMethod
 import com.sinch.verification.network.service.RestServiceProvider
 import com.sinch.verification.network.service.RetrofitRestServiceProvider
 import com.sinch.verification.process.method.VerificationMethod
@@ -26,7 +27,7 @@ object VerificationCallUtils {
     @JvmOverloads
     @Throws
     fun initiateSynchronically(
-        appHash: String,
+        authorizationMethod: AuthorizationMethod,
         method: VerificationMethodType,
         number: String,
         custom: String? = null,
@@ -34,7 +35,7 @@ object VerificationCallUtils {
         reference: String? = null,
         acceptedLanguages: String? = null,
         metadataFactory: MetadataFactory = DefaultJVMMetadataFactory(),
-        restServiceProvider: RestServiceProvider = RetrofitRestServiceProvider(AppKeyAuthorizationMethod(appHash))
+        restServiceProvider: RestServiceProvider = RetrofitRestServiceProvider(authorizationMethod)
     ): InitiationResponseData {
         val service = restServiceProvider.createService(
             VerificationService::class.java
@@ -55,12 +56,12 @@ object VerificationCallUtils {
     @JvmOverloads
     @Throws
     fun verifySynchronicallyById(
-        appHash: String,
+        authorizationMethod: AuthorizationMethod,
         verificationId: String,
         verificationCode: String,
         method: VerificationMethodType,
         restServiceProvider: RestServiceProvider =
-            RetrofitRestServiceProvider(AppKeyAuthorizationMethod(appHash))
+            RetrofitRestServiceProvider(authorizationMethod)
     ): VerificationResponseData? {
         val service = restServiceProvider.createService(
             VerificationService::class.java
