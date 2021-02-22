@@ -9,7 +9,7 @@ plugins {
 ext {
     groupName = 'com.sinch.jvm.sdk.verification'
     projectName = 'Verification'
-    versionName = '1.0.9'
+    versionName = '1.1.0'
     libDescription = "JVM Sinch Verification SDK"
 }
 
