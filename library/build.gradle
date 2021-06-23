@@ -13,7 +13,7 @@ ext {
     libDescription = "JVM Sinch Verification SDK"
 }
 
-apply from: 'bintrayPublish.gradle'
+apply from: 'publish-mavencentral.gradle'
 
 group = groupName
 version = versionName
@@ -35,9 +35,33 @@ sourceSets {
     }
 }
 
+javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.compileClasspath
+
+    options
+            {
+                setMemberLevel JavadocMemberLevel.PUBLIC
+                setAuthor true
+
+                links "https://docs.oracle.com/javase/8/docs/api/"
+            }
+}
+
 task productionJar(type: Jar) {
     from sourceSets.main.output
     from sourceSets.prod.output
+}
+
+task mainSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.output
+    from sourceSets.prod.output
+}
+
+task javadocJar(type: Jar, dependsOn: 'javadoc') {
+    archiveClassifier.set('javadoc')
+    from javadoc
 }
 
 task ftest1Jar(type: Jar) {
